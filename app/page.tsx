@@ -4,12 +4,25 @@
 
 import React, { JSX, useState } from "react";
 import SalaryCalculator from "@/components/SalaryCalculator";
-import LoanCalculator from "@/components/LoanCalculator";
+import LoanEligibilityCalculator from "@/components/LoanCalculator"; // Renamed for clarity
+import LoanPaymentCalculator from "@/components/LoanPaymentCalculator";
+import SalaryEstimator from "@/components/SalaryEstimator";
 
-type Tool = "salary" | "loan";
+// Expanded type to include all four tools
+type Tool = "salary" | "eligibility" | "payment" | "estimator";
+
+// Define tool metadata for cleaner mapping
+const tools: { id: Tool; title: string; component: React.FC }[] = [
+	{ id: "salary", title: "Net Salary", component: SalaryCalculator },
+	{ id: "eligibility", title: "Loan Eligibility", component: LoanEligibilityCalculator },
+	{ id: "payment", title: "Loan Payments", component: LoanPaymentCalculator },
+	{ id: "estimator", title: "Salary Estimator", component: SalaryEstimator },
+];
 
 export default function HomePage(): JSX.Element {
 	const [activeTool, setActiveTool] = useState<Tool>("salary");
+
+	const ActiveComponent = tools.find((tool) => tool.id === activeTool)?.component || SalaryCalculator;
 
 	return (
 		<main className="tool-container">
@@ -18,22 +31,19 @@ export default function HomePage(): JSX.Element {
 				<p>Your one-stop calculator for salary and loans in LKR</p>
 			</header>
 
-			{/* Tool switcher / Tab navigation */}
 			<div className="tool-switcher">
-				<button
-					className={`tool-btn ${activeTool === "salary" ? "active" : ""}`}
-					onClick={() => setActiveTool("salary")}
-				>
-					Net Salary Calculator
-				</button>
-				<button className={`tool-btn ${activeTool === "loan" ? "active" : ""}`} onClick={() => setActiveTool("loan")}>
-					Housing Loan Eligibility
-				</button>
+				{tools.map((tool) => (
+					<button
+						key={tool.id}
+						className={`tool-btn ${activeTool === tool.id ? "active" : ""}`}
+						onClick={() => setActiveTool(tool.id)}
+					>
+						{tool.title}
+					</button>
+				))}
 			</div>
 
-			{/* Conditionally render the active tool */}
-			{activeTool === "salary" && <SalaryCalculator />}
-			{activeTool === "loan" && <LoanCalculator />}
+			<ActiveComponent />
 		</main>
 	);
 }

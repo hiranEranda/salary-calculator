@@ -227,3 +227,101 @@ body {
 .detail-row span:first-child {
 	color: #7f8c8d; /* Muted color for detail items */
 }
+
+/* ... (keep all your existing styles) ... */
+
+/* --- Tool Switcher (Tabs) --- */
+.tool-switcher {
+	display: grid; /* Use grid for flexibility */
+	grid-template-columns: 1fr 1fr; /* 2x2 grid on small screens */
+	gap: 5px;
+	border: 1px solid #ddd;
+	border-radius: 10px;
+	overflow: hidden;
+	margin-bottom: 2rem;
+	background-color: #ddd;
+}
+
+.tool-btn {
+	padding: 0.8rem 0.5rem; /* Adjust padding */
+	font-size: 0.9rem; /* Slightly smaller font */
+	font-weight: 600;
+	background-color: #f8f9fa;
+	border: none;
+	cursor: pointer;
+	color: #555;
+	transition: all 0.2s ease-in-out;
+	text-align: center;
+}
+
+.tool-btn.active {
+	background-color: #3498db;
+	color: white;
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* On larger screens, switch to a single row */
+@media (min-width: 640px) {
+	.tool-switcher {
+		grid-template-columns: repeat(4, 1fr);
+	}
+	.tool-btn {
+		font-size: 1rem;
+	}
+}
+/* app/globals.css (append at the end) */
+
+/* ... (all existing styles) ... */
+
+/* --- Styles for Salary Estimator Combination Table --- */
+.combinations-table {
+	margin-top: 2.5rem;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	padding: 1rem;
+	background-color: #fdfdfd;
+}
+
+.combinations-table h4 {
+	text-align: center;
+	margin-top: 0;
+	margin-bottom: 1.5rem;
+	color: #34495e;
+	font-size: 1.2rem;
+}
+
+.combinations-table .table-header {
+	font-weight: 600;
+	color: #555;
+	background-color: #f1f3f5;
+	padding: 0.5rem 1rem;
+	margin: 0 -1rem 0.5rem -1rem; /* Extend to edges */
+	border-bottom: 1px solid #e0e0e0;
+	border-top: 1px solid #e0e0e0;
+}
+
+.combinations-table .table-header span,
+.combinations-table .result-row span {
+	flex: 1; /* Distribute space evenly */
+	text-align: center;
+}
+
+.combinations-table .result-row span:first-child {
+	text-align: left;
+	padding-left: 1rem;
+}
+.combinations-table .result-row span:last-child {
+	text-align: right;
+	padding-right: 1rem;
+}
+
+/* --- Style for Error Messages --- */
+.error-note {
+	color: #c0392b;
+	text-align: center;
+	margin-top: 2rem;
+	font-weight: 600;
+	background-color: #fbeae5;
+	padding: 1rem;
+	border-radius: 8px;
+}
