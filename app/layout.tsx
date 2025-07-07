@@ -12,7 +12,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
 	title: "LKR Salary Calculator (TS)",
-	description: "A type-safe Sri Lankan salary calculator built with Next.js and TypeScript.",
+	description: "Sri Lankan salary calculator",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
