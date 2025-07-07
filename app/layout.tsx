@@ -11,8 +11,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-	title: "LKR Salary Calculator (TS)",
-	description: "Sri Lankan salary calculator",
+	title: "Financial Toolbox",
+	description: "Sri Lankan salary and housing loan calculator",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

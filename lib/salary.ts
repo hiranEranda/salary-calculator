@@ -10,6 +10,7 @@ export interface SalaryDetails {
 	welfare: number;
 	totalDeductions: number;
 	netSalary: number;
+	maxLoanInstallment: number; // <-- ADD THIS NEW PROPERTY
 }
 
 /**
