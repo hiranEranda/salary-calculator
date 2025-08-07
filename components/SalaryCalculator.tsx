@@ -6,61 +6,94 @@ import React, { useState, useMemo, JSX } from "react";
 import { calculateTax, formatCurrency } from "@/lib/salary";
 
 interface SalaryBreakdown {
-	gross: number;
-	epf: number;
-	tax: number;
-	welfare: number;
-	totalDeductions: number;
-	netSalary: number;
+        gross: number;
+        epf: number;
+        tax: number;
+        welfare: number;
+        totalDeductions: number;
+        netSalary: number;
 }
 
 export default function SalaryCalculator(): JSX.Element {
-	const [grossSalary, setGrossSalary] = useState<string>("");
+        const [grossSalary, setGrossSalary] = useState<string>("");
+        const [basicSalary, setBasicSalary] = useState<string>("");
+        const [welfareCharge, setWelfareCharge] = useState<string>("75");
 
-	const handleSalaryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const value = event.target.value;
-		if (/^\d*\.?\d*$/.test(value)) {
-			setGrossSalary(value);
-		}
-	};
+        const handleInputChange = (
+                setter: React.Dispatch<React.SetStateAction<string>>,
+        ) => (event: React.ChangeEvent<HTMLInputElement>) => {
+                const value = event.target.value;
+                if (/^\d*\.?\d*$/.test(value)) {
+                        setter(value);
+                }
+        };
 
-	const salaryDetails = useMemo<SalaryBreakdown>(() => {
-		const salaryNum = parseFloat(grossSalary) || 0;
+        const salaryDetails = useMemo<SalaryBreakdown>(() => {
+                const gross = parseFloat(grossSalary) || 0;
+                const basicRaw = basicSalary.trim();
+                const basic = parseFloat(basicRaw);
+                const welfare = parseFloat(welfareCharge) || 0;
 
-		if (salaryNum === 0) {
-			return { gross: 0, epf: 0, tax: 0, welfare: 0, totalDeductions: 0, netSalary: 0 };
-		}
+                const hasBasic = basicRaw !== "" && !isNaN(basic) && basic > 0;
 
-		const epf = salaryNum * 0.08;
-		const tax = calculateTax(salaryNum);
-		const welfare = 75;
-		const totalDeductions = epf + tax + welfare;
-		const netSalary = salaryNum - totalDeductions;
+                if (gross === 0 && !hasBasic && welfare === 0) {
+                        return { gross: 0, epf: 0, tax: 0, welfare: 0, totalDeductions: 0, netSalary: 0 };
+                }
 
-		return { gross: salaryNum, epf, tax, welfare, totalDeductions, netSalary };
-	}, [grossSalary]);
+                const epfBase = hasBasic ? basic : gross;
+                const epf = epfBase * 0.08;
+                const tax = calculateTax(gross);
+                const totalDeductions = epf + tax + welfare;
+                const netSalary = gross - totalDeductions;
 
-	return (
-		<div className="tool-content">
-			<div className="input-area">
-				<label htmlFor="gross-salary">Enter Gross Monthly Salary (LKR)</label>
-				<input
-					id="gross-salary"
-					type="text"
-					inputMode="decimal"
-					className="salary-input"
-					value={grossSalary}
-					onChange={handleSalaryChange}
-					placeholder="e.g., 250000"
-					autoFocus
-				/>
-			</div>
+                return { gross, epf, tax, welfare, totalDeductions, netSalary };
+        }, [grossSalary, basicSalary, welfareCharge]);
 
-			<div className="results-breakdown">
-				<div className="result-row">
-					<span className="description">💼 Gross Salary</span>
-					<span className="amount">{formatCurrency(salaryDetails.gross)}</span>
-				</div>
+        return (
+                <div className="tool-content">
+                        <div className="input-area">
+                                <label htmlFor="gross-salary">Enter Gross Monthly Salary (LKR)</label>
+                                <input
+                                        id="gross-salary"
+                                        type="text"
+                                        inputMode="decimal"
+                                        className="salary-input"
+                                        value={grossSalary}
+                                        onChange={handleInputChange(setGrossSalary)}
+                                        placeholder="e.g., 250000"
+                                        autoFocus
+                                />
+                        </div>
+                        <div className="input-area">
+                                <label htmlFor="basic-salary">Enter Basic Monthly Salary (LKR)</label>
+                                <input
+                                        id="basic-salary"
+                                        type="text"
+                                        inputMode="decimal"
+                                        className="salary-input"
+                                        value={basicSalary}
+                                        onChange={handleInputChange(setBasicSalary)}
+                                        placeholder="e.g., 150000"
+                                />
+                        </div>
+                        <div className="input-area">
+                                <label htmlFor="welfare-charge">Welfare Charge (LKR)</label>
+                                <input
+                                        id="welfare-charge"
+                                        type="text"
+                                        inputMode="decimal"
+                                        className="salary-input"
+                                        value={welfareCharge}
+                                        onChange={handleInputChange(setWelfareCharge)}
+                                        placeholder="e.g., 75"
+                                />
+                        </div>
+
+                        <div className="results-breakdown">
+                                <div className="result-row">
+                                        <span className="description">💼 Gross Salary</span>
+                                        <span className="amount">{formatCurrency(salaryDetails.gross)}</span>
+                                </div>
 				{/* ... all other deduction rows ... */}
 				<div className="result-row">
 					<span className="description" style={{ fontWeight: 600 }}>
