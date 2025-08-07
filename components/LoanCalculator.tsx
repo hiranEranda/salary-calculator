@@ -111,7 +111,7 @@ export default function LoanCalculator(): JSX.Element {
 						<span>- {formatCurrency(calculation.applicant1.epf)}</span>
 					</div>
 					<div className="result-row detail-row">
-						<span style={{ paddingLeft: "3rem" }}>Tax (APIIT)</span>
+                                               <span style={{ paddingLeft: "3rem" }}>Tax (APIT)</span>
 						<span>- {formatCurrency(calculation.applicant1.tax)}</span>
 					</div>
 					<div className="result-row subtotal-row">
@@ -135,7 +135,7 @@ export default function LoanCalculator(): JSX.Element {
 								<span>- {formatCurrency(calculation.applicant2.epf)}</span>
 							</div>
 							<div className="result-row detail-row">
-								<span style={{ paddingLeft: "3rem" }}>Tax (APIIT)</span>
+                                                            <span style={{ paddingLeft: "3rem" }}>Tax (APIT)</span>
 								<span>- {formatCurrency(calculation.applicant2.tax)}</span>
 							</div>
 							<div className="result-row subtotal-row">

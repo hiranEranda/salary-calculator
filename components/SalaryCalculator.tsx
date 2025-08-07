@@ -74,9 +74,9 @@ export default function SalaryCalculator(): JSX.Element {
 					<span className="amount">- {formatCurrency(salaryDetails.epf)}</span>
 				</div>
 				<div className="result-row">
-					<span className="description" style={{ paddingLeft: "1.5rem" }}>
-						💰 Tax (APIIT)
-					</span>
+                                       <span className="description" style={{ paddingLeft: "1.5rem" }}>
+                                               💰 Tax (APIT)
+                                       </span>
 					<span className="amount">- {formatCurrency(salaryDetails.tax)}</span>
 				</div>
 				<div className="result-row">
