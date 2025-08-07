@@ -30,14 +30,18 @@ export default function SalaryCalculator(): JSX.Element {
 
         const salaryDetails = useMemo<SalaryBreakdown>(() => {
                 const gross = parseFloat(grossSalary) || 0;
-                const basic = parseFloat(basicSalary) || 0;
+                const basicRaw = basicSalary.trim();
+                const basic = parseFloat(basicRaw);
                 const welfare = parseFloat(welfareCharge) || 0;
 
-                if (gross === 0 && basic === 0 && welfare === 0) {
+                const hasBasic = basicRaw !== "" && !isNaN(basic) && basic > 0;
+
+                if (gross === 0 && !hasBasic && welfare === 0) {
                         return { gross: 0, epf: 0, tax: 0, welfare: 0, totalDeductions: 0, netSalary: 0 };
                 }
 
-                const epf = basic * 0.08;
+                const epfBase = hasBasic ? basic : gross;
+                const epf = epfBase * 0.08;
                 const tax = calculateTax(gross);
                 const totalDeductions = epf + tax + welfare;
                 const netSalary = gross - totalDeductions;
