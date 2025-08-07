@@ -86,8 +86,8 @@ export default function SalaryEstimator(): JSX.Element {
 		if (monthlyPayment > 0 && NUMBER_OF_SPLITS > 1) {
 			// Ensure we have at least 2 splits
 			for (let i = 0; i < NUMBER_OF_SPLITS; i++) {
-				// The loop condition and the divisor are now controlled by the same constant
-				const splitRatio = (i / (NUMBER_OF_SPLITS - 1.0)) * 0.5;
+				// The loop condition and the divisor are controlled by the same constant, giving ratios from 0 to 1
+				const splitRatio = i / (NUMBER_OF_SPLITS - 1);
 
 				const installmentA = monthlyPayment * splitRatio;
 				const installmentB = monthlyPayment * (1 - splitRatio);
