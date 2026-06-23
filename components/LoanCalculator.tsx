@@ -10,9 +10,9 @@ type LoanType = "single" | "joint";
 interface ApplicantDetails {
 	salary: number;
 	loanPortion: number;
-	epf: number; // <-- ADD
-	tax: number; // <-- ADD
-	totalDeductions: number; // <-- RENAME for clarity
+	epf: number;
+	tax: number;
+	totalDeductions: number;
 	installment: number;
 }
 
@@ -36,11 +36,10 @@ export default function LoanCalculator(): JSX.Element {
 
 			const epf = salary * 0.08;
 			const tax = calculateTax(salary);
-			const totalDeductions = epf + tax; // Use the new name
+			const totalDeductions = epf + tax;
 			const loanPortion = salary * 0.6;
 			const installment = Math.max(0, loanPortion - totalDeductions);
 
-			// Return the full breakdown
 			return { salary, loanPortion, epf, tax, totalDeductions, installment };
 		};
 
@@ -58,85 +57,89 @@ export default function LoanCalculator(): JSX.Element {
 		<div className="tool-content">
 			<div className="toggle-group">
 				<button className={`toggle-btn ${loanType === "single" ? "active" : ""}`} onClick={() => setLoanType("single")}>
-					👤 Single
+					Single
 				</button>
 				<button className={`toggle-btn ${loanType === "joint" ? "active" : ""}`} onClick={() => setLoanType("joint")}>
-					👥 Joint
+					Joint
 				</button>
 			</div>
 
 			<div className="input-group">
 				<div className="input-area">
-					<label htmlFor="salary1">Applicant 1 Gross Salary (LKR)</label>
-					<input
-						id="salary1"
-						type="text"
-						inputMode="decimal"
-						className="salary-input"
-						value={salary1}
-						onChange={(e) => setSalary1(e.target.value.replace(/[^0-9.]/g, ""))}
-						placeholder="e.g., 250000"
-					/>
+					<label htmlFor="salary1">Applicant 1 — Gross Salary</label>
+					<div className="input-wrapper">
+						<span className="input-prefix">LKR</span>
+						<input
+							id="salary1"
+							type="text"
+							inputMode="decimal"
+							className="salary-input"
+							value={salary1}
+							onChange={(e) => setSalary1(e.target.value.replace(/[^0-9.]/g, ""))}
+							placeholder="e.g., 250,000"
+						/>
+					</div>
 				</div>
 
 				{loanType === "joint" && (
 					<div className="input-area">
-						<label htmlFor="salary2">Applicant 2 Gross Salary (LKR)</label>
-						<input
-							id="salary2"
-							type="text"
-							inputMode="decimal"
-							className="salary-input"
-							value={salary2}
-							onChange={(e) => setSalary2(e.target.value.replace(/[^0-9.]/g, ""))}
-							placeholder="e.g., 180000"
-						/>
+						<label htmlFor="salary2">Applicant 2 — Gross Salary</label>
+						<div className="input-wrapper">
+							<span className="input-prefix">LKR</span>
+							<input
+								id="salary2"
+								type="text"
+								inputMode="decimal"
+								className="salary-input"
+								value={salary2}
+								onChange={(e) => setSalary2(e.target.value.replace(/[^0-9.]/g, ""))}
+								placeholder="e.g., 180,000"
+							/>
+						</div>
 					</div>
 				)}
 			</div>
 
 			{(salary1 || (loanType === "joint" && salary2)) && (
 				<div className="loan-eligibility">
-					{/* Applicant 1 Breakdown */}
-					<h3 className="applicant-header">👤 Applicant 1 Breakdown</h3>
+					<h3 className="applicant-header">Applicant 1 Breakdown</h3>
 					<div className="result-row">
 						<span>Loanable Portion (60%)</span>
 						<span>{formatCurrency(calculation.applicant1.loanPortion)}</span>
 					</div>
 					<div className="result-row sub-header-row">
-						<span style={{ paddingLeft: "1.5rem" }}>Less: Deductions</span>
+						<span style={{ paddingLeft: "1rem" }}>Less: Deductions</span>
 					</div>
 					<div className="result-row detail-row">
-						<span style={{ paddingLeft: "3rem" }}>EPF (8%)</span>
-						<span>- {formatCurrency(calculation.applicant1.epf)}</span>
+						<span>EPF (8%)</span>
+						<span>– {formatCurrency(calculation.applicant1.epf)}</span>
 					</div>
 					<div className="result-row detail-row">
-						<span style={{ paddingLeft: "3rem" }}>Tax (APIIT)</span>
-						<span>- {formatCurrency(calculation.applicant1.tax)}</span>
+						<span>Tax (APIIT)</span>
+						<span>– {formatCurrency(calculation.applicant1.tax)}</span>
 					</div>
 					<div className="result-row subtotal-row">
 						<span>Eligible Installment</span>
 						<span>{formatCurrency(calculation.applicant1.installment)}</span>
 					</div>
 
-					{/* Applicant 2 Breakdown */}
 					{loanType === "joint" && (
 						<>
-							<h3 className="applicant-header">👥 Applicant 2 Breakdown</h3>
+							<h3 className="applicant-header">Applicant 2 Breakdown</h3>
 							<div className="result-row">
 								<span>Loanable Portion (60%)</span>
 								<span>{formatCurrency(calculation.applicant2.loanPortion)}</span>
 							</div>
 							<div className="result-row sub-header-row">
-								<span style={{ paddingLeft: "1.5rem" }}>Less: Deductions</span>
+								<span style={{ paddingLeft: "1rem" }}>Less: Deductions</span>
 							</div>
 							<div className="result-row detail-row">
-								<span style={{ paddingLeft: "3rem" }}>EPF (8%)</span>
-								<span>- {formatCurrency(calculation.applicant2.epf)}</span>
+								<span>EPF (8%)</span>
+								<span>– {formatCurrency(calculation.applicant2.epf)}</span>
 							</div>
 							<div className="result-row detail-row">
-								<span style={{ paddingLeft: "3rem" }}>Tax (APIIT)</span>
-								<span>- {formatCurrency(calculation.applicant2.tax)}</span>
+								<span>Tax (APIIT)</span>
+								<span>– {formatCurrency(calculation.applicant2.tax)}</span>
 							</div>
 							<div className="result-row subtotal-row">
 								<span>Eligible Installment</span>
@@ -145,9 +148,8 @@ export default function LoanCalculator(): JSX.Element {
 						</>
 					)}
 
-					{/* Final Combined Result */}
 					<div className="result-row loan-result-row">
-						<span className="description">✅ Total Max. Monthly Installment</span>
+						<span className="description">Total Max. Monthly Installment</span>
 						<span className="amount">{formatCurrency(calculation.totalMaxInstallment)}</span>
 					</div>
 				</div>

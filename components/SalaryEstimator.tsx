@@ -64,14 +64,10 @@ export default function SalaryEstimator(): JSX.Element {
 			error: null,
 		};
 
-		if (houseCost <= 0 || annualRate <= 0 || loanYears <= 0) {
-			return defaultResult;
-		}
+		if (houseCost <= 0 || annualRate <= 0 || loanYears <= 0) return defaultResult;
 
 		const loanAmount = houseCost - initialPayment;
-		if (loanAmount <= 0) {
-			return defaultResult;
-		}
+		if (loanAmount <= 0) return defaultResult;
 
 		const monthlyRate = annualRate / 100 / 12;
 		const numberOfPayments = loanYears * 12;
@@ -84,9 +80,7 @@ export default function SalaryEstimator(): JSX.Element {
 
 		const jointCombinations: SalaryCombination[] = [];
 		if (monthlyPayment > 0 && NUMBER_OF_SPLITS > 1) {
-			// Ensure we have at least 2 splits
 			for (let i = 0; i < NUMBER_OF_SPLITS; i++) {
-				// The loop condition and the divisor are now controlled by the same constant
 				const splitRatio = (i / (NUMBER_OF_SPLITS - 1.0)) * 0.5;
 
 				const installmentA = monthlyPayment * splitRatio;
@@ -95,17 +89,11 @@ export default function SalaryEstimator(): JSX.Element {
 				const salaryA = findRequiredSalary(installmentA);
 				const salaryB = findRequiredSalary(installmentB);
 
-				// A combination is valid if we could find a salary for any part of the
-				// installment that was greater than zero.
 				const isSalaryAValid = installmentA > 0 ? salaryA > 0 : true;
 				const isSalaryBValid = installmentB > 0 ? salaryB > 0 : true;
 
 				if (isSalaryAValid && isSalaryBValid) {
-					jointCombinations.push({
-						salaryA,
-						salaryB,
-						total: salaryA + salaryB,
-					});
+					jointCombinations.push({ salaryA, salaryB, total: salaryA + salaryB });
 				}
 			}
 		}
@@ -127,88 +115,98 @@ export default function SalaryEstimator(): JSX.Element {
 					className={`toggle-btn ${applicantType === "single" ? "active" : ""}`}
 					onClick={() => setApplicantType("single")}
 				>
-					👤 Single Applicant
+					Single Applicant
 				</button>
 				<button
 					className={`toggle-btn ${applicantType === "joint" ? "active" : ""}`}
 					onClick={() => setApplicantType("joint")}
 				>
-					👥 Joint Applicants
+					Joint Applicants
 				</button>
 			</div>
 
 			<div className="input-group" style={{ gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-				{/* Input fields remain the same */}
 				<div className="input-area" style={{ gridColumn: "1 / -1" }}>
-					<label htmlFor="boq">House Cost / BOQ Estimate (LKR)</label>
-					<input
-						id="boq"
-						type="text"
-						inputMode="decimal"
-						className="salary-input"
-						value={boq}
-						onChange={(e) => setBoq(e.target.value.replace(/[^0-9.]/g, ""))}
-						placeholder="e.g., 15000000"
-					/>
+					<label htmlFor="boq">House Cost / BOQ Estimate</label>
+					<div className="input-wrapper">
+						<span className="input-prefix">LKR</span>
+						<input
+							id="boq"
+							type="text"
+							inputMode="decimal"
+							className="salary-input"
+							value={boq}
+							onChange={(e) => setBoq(e.target.value.replace(/[^0-9.]/g, ""))}
+							placeholder="e.g., 15,000,000"
+						/>
+					</div>
 				</div>
-				<div className="input-area">
+				<div className="input-area" style={{ marginBottom: 0 }}>
 					<label htmlFor="downpayment">Down Payment (Optional)</label>
-					<input
-						id="downpayment"
-						type="text"
-						inputMode="decimal"
-						className="salary-input"
-						value={downPayment}
-						onChange={(e) => setDownPayment(e.target.value.replace(/[^0-9.]/g, ""))}
-						placeholder="e.g., 3000000"
-					/>
+					<div className="input-wrapper">
+						<span className="input-prefix">LKR</span>
+						<input
+							id="downpayment"
+							type="text"
+							inputMode="decimal"
+							className="salary-input"
+							value={downPayment}
+							onChange={(e) => setDownPayment(e.target.value.replace(/[^0-9.]/g, ""))}
+							placeholder="e.g., 3,000,000"
+						/>
+					</div>
 				</div>
-				<div className="input-area">
-					<label htmlFor="rate4">Annual Interest Rate (%)</label>
-					<input
-						id="rate4"
-						type="text"
-						inputMode="decimal"
-						className="salary-input"
-						value={rate}
-						onChange={(e) => setRate(e.target.value.replace(/[^0-9.]/g, ""))}
-					/>
+				<div className="input-area" style={{ marginBottom: 0 }}>
+					<label htmlFor="rate4">Annual Interest Rate</label>
+					<div className="input-wrapper">
+						<span className="input-prefix">%</span>
+						<input
+							id="rate4"
+							type="text"
+							inputMode="decimal"
+							className="salary-input"
+							value={rate}
+							onChange={(e) => setRate(e.target.value.replace(/[^0-9.]/g, ""))}
+						/>
+					</div>
 				</div>
-				<div className="input-area">
-					<label htmlFor="years4">Loan Term (Years)</label>
-					<input
-						id="years4"
-						type="text"
-						inputMode="numeric"
-						className="salary-input"
-						value={years}
-						onChange={(e) => setYears(e.target.value.replace(/[^0-9]/g, ""))}
-					/>
+				<div className="input-area" style={{ gridColumn: "2 / 3", marginBottom: 0 }}>
+					<label htmlFor="years4">Loan Term</label>
+					<div className="input-wrapper">
+						<span className="input-prefix">YRS</span>
+						<input
+							id="years4"
+							type="text"
+							inputMode="numeric"
+							className="salary-input"
+							value={years}
+							onChange={(e) => setYears(e.target.value.replace(/[^0-9]/g, ""))}
+						/>
+					</div>
 				</div>
 			</div>
 
 			{result.loanAmount > 0 && !result.error && (
-				<div className="results-breakdown" style={{ marginTop: "2rem" }}>
+				<div className="results-breakdown" style={{ marginTop: "1.75rem" }}>
 					<h3 className="applicant-header" style={{ textAlign: "center", marginTop: 0 }}>
 						Calculation Summary
 					</h3>
-					<div className="result-row">
-						<span className="description">Needed Loan Amount</span>
-						<span className="amount">{formatCurrency(result.loanAmount)}</span>
-					</div>
-					<div className="result-row">
-						<span className="description">Resulting Monthly Installment</span>
-						<span className="amount">{formatCurrency(result.monthlyPayment)}</span>
+
+					<div className="stats-strip">
+						<div className="stat-card">
+							<div className="stat-label">Needed Loan Amount</div>
+							<div className="stat-value">{formatCurrency(result.loanAmount)}</div>
+						</div>
+						<div className="stat-card highlight-blue">
+							<div className="stat-label">Monthly Installment</div>
+							<div className="stat-value">{formatCurrency(result.monthlyPayment)}</div>
+						</div>
 					</div>
 
 					{applicantType === "single" && (
-						<div className="result-row loan-result-row" style={{ backgroundColor: "#e8f6ef", marginTop: "1.5rem" }}>
-							<span className="description" style={{ color: "#16a085" }}>
-								✅ Required Gross Monthly Salary
-							</span>
-							<span className="amount" style={{ color: "#16a085" }}>
-								{formatCurrency(result.singleRequiredSalary)}
-							</span>
+						<div className="result-row net-salary-row" style={{ marginTop: "0.5rem" }}>
+							<span className="description">Required Gross Monthly Salary</span>
+							<span className="amount">{formatCurrency(result.singleRequiredSalary)}</span>
 						</div>
 					)}
 
@@ -216,20 +214,20 @@ export default function SalaryEstimator(): JSX.Element {
 						<div className="combinations-table">
 							<h4>Possible Salary Combinations</h4>
 							<div className="result-row table-header">
-								<span>Applicant 1 Salary</span>
-								<span>Applicant 2 Salary</span>
-								<span>Total Combined</span>
+								<span>Applicant 1</span>
+								<span>Applicant 2</span>
+								<span>Combined</span>
 							</div>
 							{result.jointCombinations.map((combo, index) => (
 								<div className="result-row" key={index}>
 									<span>{formatCurrency(combo.salaryA)}</span>
 									<span>{formatCurrency(combo.salaryB)}</span>
-									<span style={{ fontWeight: "bold" }}>{formatCurrency(combo.total)}</span>
+									<span style={{ fontWeight: 700 }}>{formatCurrency(combo.total)}</span>
 								</div>
 							))}
-							<p className="eligibility-note" style={{ marginTop: "1.5rem", textAlign: "center" }}>
-								Notice how the total combined salary for a couple is often <strong>less</strong> than the salary
-								required by a single person for the same loan, due to lower individual taxes.
+							<p className="eligibility-note">
+								The combined salary for a couple is often <strong>less</strong> than a single person needs for the same
+								loan — because lower individual taxes apply.
 							</p>
 						</div>
 					)}
