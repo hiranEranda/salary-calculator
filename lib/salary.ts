@@ -22,7 +22,7 @@ interface TaxBracket {
 }
 
 /**
- * Calculates the monthly APIIT (tax) based on Sri Lankan tax brackets.
+ * Calculates the monthly APIT (tax) based on Sri Lankan tax brackets.
  * @param {number} salary - The gross monthly salary.
  * @returns {number} The calculated monthly tax, rounded to 2 decimal places.
  */

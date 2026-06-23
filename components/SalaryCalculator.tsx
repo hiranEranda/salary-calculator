@@ -19,14 +19,15 @@ let _seq = 0;
 const nextId = () => `cd${++_seq}`;
 
 export default function SalaryCalculator(): JSX.Element {
-	const [grossSalary, setGrossSalary] = useState("");
+	const [grossSalary, setGrossSalary]   = useState("");
+	const [basicSalary, setBasicSalary]   = useState("");
 
 	// Built-in configurable deductions
-	const [epfEnabled, setEpfEnabled]       = useState(true);
-	const [epfRate, setEpfRate]             = useState("8");
-	const [taxEnabled, setTaxEnabled]       = useState(true);
+	const [epfEnabled, setEpfEnabled]         = useState(true);
+	const [epfRate, setEpfRate]               = useState("8");
+	const [taxEnabled, setTaxEnabled]         = useState(true);
 	const [welfareEnabled, setWelfareEnabled] = useState(true);
-	const [welfareAmount, setWelfareAmount] = useState("75");
+	const [welfareAmount, setWelfareAmount]   = useState("75");
 
 	// Custom deductions
 	const [customDeds, setCustomDeds] = useState<CustomDeduction[]>([]);
@@ -44,10 +45,13 @@ export default function SalaryCalculator(): JSX.Element {
 		setCustomDeds((prev) => prev.map((d) => (d.id === id ? { ...d, ...patch } : d)));
 
 	const gross = parseFloat(grossSalary) || 0;
+	const basic = parseFloat(basicSalary) || 0;
+	const epfBase = basic > 0 ? basic : gross;
+	const usingBasic = basic > 0 && basic < gross;
 
 	const calc = useMemo(() => {
-		const epf     = epfEnabled && gross > 0 ? gross * ((parseFloat(epfRate) || 0) / 100) : 0;
-		const tax     = taxEnabled && gross > 0 ? calculateTax(gross) : 0;
+		const epf     = epfEnabled && epfBase > 0 ? epfBase * ((parseFloat(epfRate) || 0) / 100) : 0;
+		const tax     = taxEnabled  && gross  > 0 ? calculateTax(gross) : 0;
 		const welfare = welfareEnabled && gross > 0 ? parseFloat(welfareAmount) || 0 : 0;
 
 		const customItems = customDeds
@@ -62,21 +66,21 @@ export default function SalaryCalculator(): JSX.Element {
 		const netSalary = Math.max(0, gross - totalDeductions);
 
 		return { epf, tax, welfare, customItems, customTotal, totalDeductions, netSalary };
-	}, [gross, epfEnabled, epfRate, taxEnabled, welfareEnabled, welfareAmount, customDeds]);
+	}, [gross, epfBase, epfEnabled, epfRate, taxEnabled, welfareEnabled, welfareAmount, customDeds]);
 
-	// Bar percentages
-	const pct = (v: number) => (gross > 0 ? (v / gross) * 100 : 0);
-	const netPct    = pct(calc.netSalary);
-	const epfPct    = pct(calc.epf);
-	const taxPct    = pct(calc.tax);
-	const otherPct  = pct(calc.welfare + calc.customTotal);
-	const hasOther  = calc.welfare > 0 || calc.customTotal > 0;
-	const epfLabel  = `EPF (${epfRate || "0"}%)`;
+	// Bar percentages (always relative to gross)
+	const pct      = (v: number) => (gross > 0 ? (v / gross) * 100 : 0);
+	const netPct   = pct(calc.netSalary);
+	const epfPct   = pct(calc.epf);
+	const taxPct   = pct(calc.tax);
+	const otherPct = pct(calc.welfare + calc.customTotal);
+	const hasOther = calc.welfare > 0 || calc.customTotal > 0;
+	const epfLabel = `EPF (${epfRate || "0"}% of ${usingBasic ? "Basic" : "Gross"})`;
 
 	return (
 		<div className="tool-content">
 
-			{/* ── Gross Salary ── */}
+			{/* ── Salary Inputs ── */}
 			<div className="input-area">
 				<label htmlFor="gross-salary">Gross Monthly Salary</label>
 				<div className="input-wrapper">
@@ -90,6 +94,25 @@ export default function SalaryCalculator(): JSX.Element {
 						onChange={(e) => { if (/^\d*\.?\d*$/.test(e.target.value)) setGrossSalary(e.target.value); }}
 						placeholder="e.g., 250,000"
 						autoFocus
+					/>
+				</div>
+			</div>
+
+			<div className="input-area">
+				<label htmlFor="basic-salary">
+					Basic Salary
+					<span className="field-hint">optional — used as EPF base when provided</span>
+				</label>
+				<div className="input-wrapper">
+					<span className="input-prefix">LKR</span>
+					<input
+						id="basic-salary"
+						type="text"
+						inputMode="decimal"
+						className="salary-input"
+						value={basicSalary}
+						onChange={(e) => { if (/^\d*\.?\d*$/.test(e.target.value)) setBasicSalary(e.target.value); }}
+						placeholder="e.g., 150,000"
 					/>
 				</div>
 			</div>
@@ -114,7 +137,10 @@ export default function SalaryCalculator(): JSX.Element {
 						onClick={() => setEpfEnabled((v) => !v)}
 						aria-label={epfEnabled ? "Disable EPF" : "Enable EPF"}
 					/>
-					<span className="ded-row-label">EPF (Employee)</span>
+					<span className="ded-row-label">
+						EPF (Employee)
+						{usingBasic && epfEnabled && <span className="ded-base-chip">Basic</span>}
+					</span>
 					<input
 						type="text"
 						inputMode="decimal"
@@ -133,7 +159,7 @@ export default function SalaryCalculator(): JSX.Element {
 						onClick={() => setTaxEnabled((v) => !v)}
 						aria-label={taxEnabled ? "Disable Tax" : "Enable Tax"}
 					/>
-					<span className="ded-row-label">Income Tax (APIIT)</span>
+					<span className="ded-row-label">Income Tax (APIT)</span>
 					<span className="ded-auto-badge">Auto</span>
 				</div>
 
@@ -190,7 +216,7 @@ export default function SalaryCalculator(): JSX.Element {
 								onClick={() => updateCustomDed(ded.id, { type: "fixed" })}
 							>LKR</button>
 						</div>
-						<button className="ded-remove-btn" onClick={() => removeCustomDed(ded.id)} aria-label="Remove deduction">
+						<button className="ded-remove-btn" onClick={() => removeCustomDed(ded.id)} aria-label="Remove">
 							<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
 								<line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
 								<line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
@@ -228,6 +254,12 @@ export default function SalaryCalculator(): JSX.Element {
 					<span className="description">Gross Salary</span>
 					<span className="amount">{formatCurrency(gross)}</span>
 				</div>
+				{usingBasic && (
+					<div className="result-row detail-row">
+						<span className="description">Basic Salary</span>
+						<span className="amount">{formatCurrency(basic)}</span>
+					</div>
+				)}
 
 				<div className="result-row section-heading-row">
 					<span className="description">Deductions</span>
@@ -241,7 +273,7 @@ export default function SalaryCalculator(): JSX.Element {
 				)}
 				{taxEnabled && (
 					<div className="result-row detail-row">
-						<span className="description">Income Tax (APIIT)</span>
+						<span className="description">Income Tax (APIT)</span>
 						<span className="amount">– {formatCurrency(calc.tax)}</span>
 					</div>
 				)}

@@ -780,6 +780,32 @@ body {
 	color: var(--text-label);
 }
 
+/* Optional field hint (inline label suffix) */
+.field-hint {
+	margin-left: 0.5rem;
+	font-size: 0.62rem;
+	font-weight: 500;
+	color: var(--text-muted);
+	text-transform: none;
+	letter-spacing: 0;
+	font-style: italic;
+}
+
+/* "Basic" chip next to EPF label when basic salary is active */
+.ded-base-chip {
+	display: inline-block;
+	margin-left: 0.4rem;
+	font-size: 0.62rem;
+	font-weight: 700;
+	padding: 0.1rem 0.4rem;
+	background: var(--accent-amber-soft);
+	color: var(--accent-amber);
+	border-radius: var(--radius-pill);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	vertical-align: middle;
+}
+
 /* Add button — reuses .add-period-btn shape but smaller */
 .add-ded-btn {
 	display: inline-flex;
